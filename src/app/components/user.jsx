@@ -1,25 +1,30 @@
-import React from "react";
-const RenderUsers = (props) => {
- 
-  if(props.renderTableBody.length === 0) return ``
-  return( 
-  <table className="table">
-  <thead>
-    <tr>
-      <th scope="col">Имя</th>
-      <th scope="col">Качество</th>
-      <th scope="col">Профессия</th>
-      <th scope="col">Встретился, раз</th>
-      <th scope="col">Оценка</th>
-      <th scope="col">Избранное</th>
-      <th></th>
+import React from 'react'
+import Qualities from './qualitie'
+import Bookmark from './bookmark'
+
+const RenderUsers = ({ users, handleDeleteUser }) => {
+  return users.map((el) => (
+    <tr key={el._id}>
+      <th scope="row">{el.name}</th>
+      <td>
+        <Qualities qualities={el.qualities} />
+      </td>
+      <td>{el.profession.name}</td>
+      <td>{el.completedMeetings}</td>
+      <td>{el.rate}/5</td>
+      <td>
+        <Bookmark />
+      </td>
+      <td>
+        <button
+          className="btn btn-danger"
+          onClick={() => handleDeleteUser(el._id)}
+        >
+          Delete
+        </button>
+      </td>
     </tr>
-  </thead>
-  <tbody>         
-  {props.renderTableBody}
-  </tbody>
- </table> 
-  )
+  ))
 }
 
 export default RenderUsers
