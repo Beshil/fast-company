@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 const SearchStatus = ({ numberUsers }) => {
-  const numUsers = numberUsers.length
+  const numUsers = numberUsers
   const renderStatus = () => {
     if (numUsers === 1) {
       return (
@@ -32,6 +32,6 @@ const SearchStatus = ({ numberUsers }) => {
 }
 
 SearchStatus.propTypes = {
-  numberUsers: PropTypes.array.isRequired
+  numberUsers: PropTypes.number.isRequired
 }
 export default SearchStatus

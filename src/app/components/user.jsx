@@ -3,22 +3,22 @@ import Qualities from './qualitie'
 import Bookmark from './bookmark'
 
 const RenderUsers = ({ users, handleDeleteUser }) => {
-  return users.map((el) => (
-    <tr key={el._id}>
-      <th scope="row">{el.name}</th>
+  return Object.keys(users).map((el) => (
+    <tr key={users[el]._id}>
+      <th scope="row">{users[el].name}</th>
       <td>
-        <Qualities qualities={el.qualities} />
+        <Qualities qualities={users[el].qualities} />
       </td>
-      <td>{el.profession.name}</td>
-      <td>{el.completedMeetings}</td>
-      <td>{el.rate}/5</td>
+      <td>{users[el].profession.name}</td>
+      <td>{users[el].completedMeetings}</td>
+      <td>{users[el].rate}/5</td>
       <td>
         <Bookmark />
       </td>
       <td>
         <button
           className="btn btn-danger"
-          onClick={() => handleDeleteUser(el._id)}
+          onClick={() => handleDeleteUser(users[el]._id)}
         >
           Delete
         </button>
