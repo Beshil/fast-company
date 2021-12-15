@@ -3,16 +3,16 @@ import React from 'react'
 const GroupList = ({ items, onItemSelect, selectedItem }) => {
   return (
     <ul className="list-group">
-      {items.map((item) => (
+      {Object.keys(items).map((item) => (
         <li
-          key={item._id}
+          key={items[item]._id}
           className={
-            'list-group-item' + (item === selectedItem ? ' active' : '')
+            'list-group-item' + (items[item] === selectedItem ? ' active' : '')
           }
-          onClick={() => onItemSelect(item)}
+          onClick={() => onItemSelect(items[item])}
           role="button"
         >
-          {item.name}
+          {items[item].name}
         </li>
       ))}
     </ul>
