@@ -2,7 +2,7 @@ import React from 'react'
 import Qualities from './qualitie'
 import Bookmark from './bookmark'
 
-const RenderUsers = ({ users, handleDeleteUser }) => {
+const RenderUsers = ({ users, handleToggleBookMark, handleDeleteUser }) => {
   return Object.keys(users).map((el) => (
     <tr key={users[el]._id}>
       <th scope="row">{users[el].name}</th>
@@ -13,7 +13,10 @@ const RenderUsers = ({ users, handleDeleteUser }) => {
       <td>{users[el].completedMeetings}</td>
       <td>{users[el].rate}/5</td>
       <td>
-        <Bookmark />
+        <Bookmark
+          status={users[el].bookmark}
+          onClick={() => handleToggleBookMark(users[el]._id)}
+        />
       </td>
       <td>
         <button

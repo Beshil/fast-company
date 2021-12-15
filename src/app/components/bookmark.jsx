@@ -1,17 +1,16 @@
-import React, { useState } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
+
 import 'bootstrap'
 
-const Bookmark = () => {
-  const [favorite, setFavorite] = useState(false)
-
-  const handleFavoriteUser = () => {
-    setFavorite((prevState) => !prevState)
-  }
+const Bookmark = ({ status, ...rest }) => {
   return (
-    <span onClick={handleFavoriteUser}>
-      <i className={`bi bi-sun${favorite ? `-fill` : ``}`}></i>
-    </span>
+    <button {...rest}>
+      <i className={`bi bi-sun` + (status ? '-fill' : '')}></i>
+    </button>
   )
 }
-
+Bookmark.propTypes = {
+  status: PropTypes.bool.isRequired
+}
 export default Bookmark

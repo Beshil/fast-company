@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import GroupList from './groupList'
 import SearchStatus from './searchStatus'
 
-const Users = ({ users, professions, handleDeleteUser }) => {
+const Users = ({ users, professions, ...rest }) => {
   const [currentPage, setCurrentPage] = useState(1)
 
   const [selectedProf, setSelectedProf] = useState()
@@ -66,10 +66,7 @@ const Users = ({ users, professions, handleDeleteUser }) => {
               </tr>
             </thead>
             <tbody>
-              <RenderUsers
-                users={userGroup}
-                handleDeleteUser={handleDeleteUser}
-              />
+              <RenderUsers users={userGroup} {...rest} />
             </tbody>
           </table>
         )}
