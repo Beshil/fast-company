@@ -1,15 +1,38 @@
 import React, { useState, useEffect } from 'react'
-import RenderUsers from './user'
+import API from './api/index'
 import Pagination from './pagination'
 import PropTypes from 'prop-types'
 import GroupList from './groupList'
 import SearchStatus from './searchStatus'
+import UsersTable from './usersTable'
+import _ from 'lodash'
 
-const Users = ({ users, professions, ...rest }) => {
+const Users = () => {
   const [currentPage, setCurrentPage] = useState(1)
 
   const [selectedProf, setSelectedProf] = useState()
-  const pageSize = 2
+  const [sortBy, setSortBy] = useState({ path: 'name', order: 'asc' })
+  const pageSize = 8
+
+  const [users, setUsers] = useState()
+  const [professions, setProfession] = useState()
+  useEffect(() => {
+    API.users.fetchAll().then((data) => setUsers(data))
+  }, [])
+  useEffect(() => {
+    API.professions.fetchAll().then((data) => setProfession(data))
+  }, [])
+  const handleToggleBookMark = (id) => {
+    setUsers(
+      users.map((user) => {
+        if (user._id === id) return { ...user, bookmark: !user.bookmark }
+        return user
+      })
+    )
+  }
+  const handleDeleteUser = (id) => {
+    setUsers((prevState) => prevState.filter((el) => el._id !== id))
+  }
 
   useEffect(() => {
     setCurrentPage(1)
@@ -21,71 +44,69 @@ const Users = ({ users, professions, ...rest }) => {
   const handlePageChange = (pageIndex) => {
     setCurrentPage(pageIndex)
   }
+  const handleSort = (item) => {
+    setSortBy(item)
+  }
+
   const paginate = (items, pageNumber, pageSize) => {
     const startIndex = (pageNumber - 1) * pageSize
     return [...items].splice(startIndex, pageSize)
   }
-  const filteredUsers = selectedProf
-    ? users.filter((user) => user.profession._id === selectedProf._id)
-    : users
-  const count = filteredUsers.length
+  if (users) {
+    const filteredUsers = selectedProf
+      ? users.filter((user) => user.profession._id === selectedProf._id)
+      : users
+    const count = filteredUsers.length
+    const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order])
+    const userGroup = paginate(sortedUsers, currentPage, pageSize)
+    const clearSelected = () => {
+      setSelectedProf()
+    }
 
-  const userGroup = paginate(filteredUsers, currentPage, pageSize)
-  const clearSelected = () => {
-    setSelectedProf()
-  }
-
-  return (
-    <div className="d-flex">
-      {professions && (
-        <div className="d-flex flex-column flex-shrink-0 p-3">
-          <GroupList
-            selectedItem={selectedProf}
-            items={professions}
-            onItemSelect={handleProfessionSelect}
-          />
-          <button className="btn btn-primary mt-2" onClick={clearSelected}>
-            Очистить
-          </button>
-        </div>
-      )}
-
-      <div className="d-flex flex-column m-2">
-        <SearchStatus numberUsers={count} />
-        {count > 0 && (
-          <table className="table">
-            <thead>
-              <tr>
-                <th scope="col">Имя</th>
-                <th scope="col">Качество</th>
-                <th scope="col">Профессия</th>
-                <th scope="col">Встретился, раз</th>
-                <th scope="col">Оценка</th>
-                <th scope="col">Избранное</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <RenderUsers users={userGroup} {...rest} />
-            </tbody>
-          </table>
+    return (
+      <div className="d-flex">
+        {professions && (
+          <div className="d-flex flex-column flex-shrink-0 p-3">
+            <GroupList
+              selectedItem={selectedProf}
+              items={professions}
+              onItemSelect={handleProfessionSelect}
+            />
+            <button className="btn btn-primary mt-2" onClick={clearSelected}>
+              Очистить
+            </button>
+          </div>
         )}
 
-        <div className="d-flex justify-content-center">
-          <Pagination
-            itemsCount={count}
-            pageSize={pageSize}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
+        <div className="d-flex flex-column m-2">
+          <SearchStatus numberUsers={count} />
+          {count > 0 && (
+            <UsersTable
+              users={userGroup}
+              onSort={handleSort}
+              selectedSort={sortBy}
+              handleDeleteUser={handleDeleteUser}
+              handleToggleBookMark={handleToggleBookMark}
+            />
+          )}
+
+          <div className="d-flex justify-content-center">
+            <Pagination
+              itemsCount={count}
+              pageSize={pageSize}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
+  return 'Loading...'
 }
 Users.propTypes = {
   users: PropTypes.array.isRequired,
-  professions: PropTypes.array.isRequired,
+  professions: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   handleDeleteUser: PropTypes.func.isRequired
 }
 export default Users
