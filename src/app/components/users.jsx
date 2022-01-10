@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import API from './api/index'
 import Pagination from './pagination'
-import PropTypes from 'prop-types'
 import GroupList from './groupList'
 import SearchStatus from './searchStatus'
 import UsersTable from './usersTable'
@@ -12,7 +11,7 @@ const Users = () => {
 
   const [selectedProf, setSelectedProf] = useState()
   const [sortBy, setSortBy] = useState({ path: 'name', order: 'asc' })
-  const pageSize = 8
+  const pageSize = 4
 
   const [users, setUsers] = useState()
   const [professions, setProfession] = useState()
@@ -104,9 +103,5 @@ const Users = () => {
   }
   return 'Loading...'
 }
-Users.propTypes = {
-  users: PropTypes.array.isRequired,
-  professions: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  handleDeleteUser: PropTypes.func.isRequired
-}
+
 export default Users

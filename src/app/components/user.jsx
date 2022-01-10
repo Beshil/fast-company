@@ -1,20 +1,19 @@
 import React from 'react'
-import Qualities from './qualitie'
 
-const RenderUsers = ({ users, handleToggleBookMark, handleDeleteUser }) => {
-  return Object.keys(users).map((el) => (
-    <tr key={users[el]._id}>
-      <th scope="row">{users[el].name}</th>
-      <td>
-        <Qualities qualities={users[el].qualities} />
-      </td>
-      <td>{users[el].profession.name}</td>
-      <td>{users[el].completedMeetings}</td>
-      <td>{users[el].rate}/5</td>
-      <td></td>
-      <td></td>
-    </tr>
-  ))
+const User = () => {
+  return <h3>User</h3>
+  //   Object.keys(users).map((el) => (
+  //   <div key={users[el]._id}>
+  //     <h2 scope="row">{users[el].name}</h2>
+  //     <div>
+  //       <Qualities qualities={users[el].qualities} />
+  //     </div>
+  //     <div>{users[el].profession.name}</div>
+  //     <div>{users[el].completedMeetings}</div>
+  //     <div>{users[el].rate}/5</div>
+  //     <button>Все пользователи</button>
+  //   </div>
+  // ))
 }
 
-export default RenderUsers
+export default User
