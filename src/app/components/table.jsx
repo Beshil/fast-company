@@ -5,7 +5,7 @@ import TableHeader from './tableHeader'
 import TableBody from './tableBody'
 const Table = ({ onSort, selectedSort, columns, data, children }) => {
   return (
-    <table className="table">
+    <table className="table" style={{ minWidth: 700 + 'px' }}>
       {children || (
         <>
           <TableHeader {...{ onSort, selectedSort, columns }} />
