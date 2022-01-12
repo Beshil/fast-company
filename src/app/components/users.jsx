@@ -5,6 +5,7 @@ import GroupList from './groupList'
 import SearchStatus from './searchStatus'
 import UsersTable from './usersTable'
 import _ from 'lodash'
+import SearchUser from './searchUser'
 
 const Users = () => {
   const [currentPage, setCurrentPage] = useState(1)
@@ -13,6 +14,7 @@ const Users = () => {
   const [sortBy, setSortBy] = useState({ path: 'name', order: 'asc' })
   const pageSize = 4
 
+  const [search, setSearch] = useState()
   const [users, setUsers] = useState()
   const [professions, setProfession] = useState()
   useEffect(() => {
@@ -31,6 +33,11 @@ const Users = () => {
   }
   const handleDeleteUser = (id) => {
     setUsers((prevState) => prevState.filter((el) => el._id !== id))
+  }
+  const handleSearchUser = ({ target }) => {
+    setSelectedProf()
+    const regex = new RegExp(target.value, 'gi')
+    setSearch(regex)
   }
 
   useEffect(() => {
@@ -51,12 +58,17 @@ const Users = () => {
     const startIndex = (pageNumber - 1) * pageSize
     return [...items].splice(startIndex, pageSize)
   }
+
   if (users) {
     const filteredUsers = selectedProf
       ? users.filter((user) => user.profession._id === selectedProf._id)
       : users
-    const count = filteredUsers.length
-    const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order])
+    const searchUser = users.filter((user) => user.name.match(search))
+
+    const showUsers = search ? searchUser : filteredUsers
+
+    const count = showUsers.length
+    const sortedUsers = _.orderBy(showUsers, [sortBy.path], [sortBy.order])
     const userGroup = paginate(sortedUsers, currentPage, pageSize)
     const clearSelected = () => {
       setSelectedProf()
@@ -79,6 +91,7 @@ const Users = () => {
 
         <div className="d-flex flex-column m-2">
           <SearchStatus numberUsers={count} />
+          <SearchUser onChange={handleSearchUser} />
           {count > 0 && (
             <UsersTable
               users={userGroup}

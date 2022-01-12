@@ -5,7 +5,15 @@ import TableHeader from './tableHeader'
 import TableBody from './tableBody'
 const Table = ({ onSort, selectedSort, columns, data, children }) => {
   return (
-    <table className="table" style={{ minWidth: 700 + 'px' }}>
+    <table
+      className="table"
+      style={
+        ({ minWidth: 800 + 'px' },
+        { maxWidth: 700 + 'px' },
+        { minHeight: 1500 + 'px' },
+        { maxHeight: 1500 + 'px' })
+      }
+    >
       {children || (
         <>
           <TableHeader {...{ onSort, selectedSort, columns }} />
