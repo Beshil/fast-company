@@ -35,15 +35,21 @@ const Users = () => {
     setUsers((prevState) => prevState.filter((el) => el._id !== id))
   }
   const handleSearchUser = ({ target }) => {
+    const { value } = target
+
+    const search = new RegExp(value, 'gi')
+    setSearch(search)
     setSelectedProf()
-    const regex = new RegExp(target.value, 'gi')
-    setSearch(regex)
+
+    console.log(search)
   }
 
   useEffect(() => {
     setCurrentPage(1)
   }, [selectedProf])
+
   const handleProfessionSelect = (item) => {
+    setSearch()
     setSelectedProf(item)
   }
 
@@ -72,6 +78,7 @@ const Users = () => {
     const userGroup = paginate(sortedUsers, currentPage, pageSize)
     const clearSelected = () => {
       setSelectedProf()
+      setSearch()
     }
 
     return (
@@ -91,7 +98,7 @@ const Users = () => {
 
         <div className="d-flex flex-column m-2">
           <SearchStatus numberUsers={count} />
-          <SearchUser onChange={handleSearchUser} />
+          <SearchUser onChange={handleSearchUser} value={selectedProf && ''} />
           {count > 0 && (
             <UsersTable
               users={userGroup}
