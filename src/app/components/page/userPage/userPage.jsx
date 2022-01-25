@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react/cjs/react.development'
 import { useParams, useHistory } from 'react-router-dom'
-import API from './api'
-import Qualities from './qualitie'
+import API from '../../api'
+import Quality from '../../ui/qualities/quality'
 
-const User = () => {
+const UserPage = () => {
   const params = useParams()
   const history = useHistory()
   const { userId } = params
   const [user, setUser] = useState()
   useEffect(() => {
     API.users.getById(userId).then((data) => setUser(data))
-  })
+  }, [])
   const handleComeBack = () => {
     history.push('/users')
   }
@@ -23,14 +23,14 @@ const User = () => {
 
             <h3>Профессия: {user.profession.name}</h3>
             <div className="mt-3">
-              <Qualities qualities={user.qualities} />
+              <Quality qualities={user.qualities} />
             </div>
 
             <div className="mb-4 mt-3">
               completedMeetings: {user.completedMeetings}
             </div>
             <h5>Rate: {user.rate}</h5>
-            <button onClick={() => handleComeBack()}>Все пользователи</button>
+            <button onClick={() => handleComeBack()}>Изменить</button>
           </div>
         }
       </div>
@@ -39,4 +39,4 @@ const User = () => {
   return 'Loading...'
 }
 
-export default User
+export default UserPage

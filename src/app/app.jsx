@@ -1,7 +1,7 @@
 import React from 'react'
-import Users from './components/users'
-import User from './components/user'
-import NavBar from './components/navBar'
+import UsersListPage from './components/page/usersListPage'
+import UserPage from './components/page/userPage'
+import NavBar from './components/ui/navBar'
 import Login from './components/layot/login'
 import { Route, Switch } from 'react-router-dom'
 
@@ -11,9 +11,9 @@ const App = () => {
       <NavBar />
       <Switch>
         <Route path="/main" render={() => <h2>Main</h2>} />
-        <Route path="/login" component={Login} />
-        <Route path="/users/:userId" component={User} />
-        <Route path="/users" component={Users} />
+        <Route path="/login/:type?" component={Login} />
+        <Route path="/users/:userId" component={UserPage} />
+        <Route path="/users" component={UsersListPage} />
       </Switch>
     </>
   )

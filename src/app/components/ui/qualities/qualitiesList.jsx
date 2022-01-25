@@ -1,11 +1,11 @@
 import React from 'react'
-import Qualities from './qualitie'
+import Quality from './quality'
 import PropTypes from 'prop-types'
 
 const QualitiesList = ({ users }) => {
   return (
     <>
-      <Qualities qualities={users.qualities} />
+      <Quality qualities={users.qualities} />
     </>
   )
 }

@@ -1,10 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { useState } from 'react/cjs/react.development'
-const TextField = ({ label, type, name, value, handleChange, error }) => {
+const TextField = ({ label, type, name, value, onChange, error }) => {
   const [showPassword, setShowPassword] = useState(false)
   const toggleShowPassword = () => {
     setShowPassword((prevState) => !prevState)
+  }
+  const handleChange = ({ target }) => {
+    onChange({ name: [target.name], value: target.value })
   }
 
   const getInputClasses = () => {
@@ -43,7 +46,7 @@ TextField.propTypes = {
   type: PropTypes.string,
   name: PropTypes.string,
   value: PropTypes.string,
-  handleChange: PropTypes.func,
+  onChange: PropTypes.func,
   error: PropTypes.string
 }
 
