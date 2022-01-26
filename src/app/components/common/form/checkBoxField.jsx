@@ -13,7 +13,6 @@ const CheckBoxField = ({ name, value, onChange, children, error }) => {
       <input
         className={getInputClasses()}
         type="checkbox"
-        value=""
         id={name}
         onChange={handleChange}
         checked={value}

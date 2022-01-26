@@ -13,9 +13,9 @@ const RegisterForm = () => {
     email: '',
     password: '',
     profession: '',
+    licence: false,
     sex: 'male',
-    qualities: [],
-    licence: false
+    qualities: []
   })
   const [errors, setErrors] = useState({})
   const [professions, setProfession] = useState()
@@ -44,15 +44,15 @@ const RegisterForm = () => {
       isContainDigit: { message: 'Пароль должен содержать одно число' },
       min: { message: 'Пароль должен содержать менее 8 символов', value: 8 }
     },
-    profession: {
-      isRequired: {
-        message: 'Обязательно выбирите свою профессию'
-      }
-    },
     licence: {
       isRequired: {
         message:
           'Вы не можете использовать наш сервис без подтверждение лицензионного соглашения'
+      }
+    },
+    profession: {
+      isRequired: {
+        message: 'Обязательно выбирите свою профессию'
       }
     }
   }
@@ -68,7 +68,6 @@ const RegisterForm = () => {
     if (!isValid) return
     console.log(data)
   }
-
   return (
     <form onSubmit={handeSubmit}>
       <TextField
@@ -90,7 +89,7 @@ const RegisterForm = () => {
       <SelectedField
         defaultOption="Выбирите..."
         options={professions}
-        name="professions"
+        name="profession"
         onChange={handleChange}
         value={data.profession}
         label="Выбириту свою профессию"

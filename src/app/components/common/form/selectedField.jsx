@@ -20,7 +20,14 @@ const SelectedField = ({
     return 'form-select' + (error ? ' is-invalid' : '')
   }
   const handleChange = ({ target }) => {
-    onChange({ name: [target.name], value: target.value })
+    onChange({
+      name: [target.name],
+      value: {
+        _id: target.childNodes[target.selectedIndex].getAttribute('id'),
+        name: target.value
+      }
+    })
+    console.log(target)
   }
 
   return (
@@ -41,7 +48,7 @@ const SelectedField = ({
 
         {optionsArray &&
           optionsArray.map((option) => (
-            <option key={option._id} value={option._id}>
+            <option key={option.value} id={option.value} value={option.name}>
               {option.name}
             </option>
           ))}

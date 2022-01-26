@@ -4,8 +4,10 @@ export function validator(data, config) {
     let statusValidate
     switch (validateMethod) {
       case 'isRequired':
+        if (typeof data === 'object' || Array.isArray(data))
+          statusValidate = data.length === 0
         if (typeof data === 'boolean') statusValidate = !data
-        else statusValidate = data.trim() === ''
+        else statusValidate = String(data).trim() === ''
         break
       case 'isEmail':
         {

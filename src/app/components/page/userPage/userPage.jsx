@@ -4,15 +4,14 @@ import API from '../../api'
 import Quality from '../../ui/qualities/quality'
 
 const UserPage = () => {
-  const params = useParams()
   const history = useHistory()
-  const { userId } = params
+  const { userId } = useParams()
   const [user, setUser] = useState()
   useEffect(() => {
     API.users.getById(userId).then((data) => setUser(data))
   }, [])
-  const handleComeBack = () => {
-    history.push('/users')
+  const handleEditForm = () => {
+    history.push(`/users/${userId}/edit`)
   }
   if (user) {
     return (
@@ -30,7 +29,7 @@ const UserPage = () => {
               completedMeetings: {user.completedMeetings}
             </div>
             <h5>Rate: {user.rate}</h5>
-            <button onClick={() => handleComeBack()}>Изменить</button>
+            <button onClick={handleEditForm}>Изменить</button>
           </div>
         }
       </div>
