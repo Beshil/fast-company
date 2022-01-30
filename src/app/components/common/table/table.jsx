@@ -1,19 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-
-import TableHeader from './tableHeader'
 import TableBody from './tableBody'
+import TableHeader from './tableHeader'
+
 const Table = ({ onSort, selectedSort, columns, data, children }) => {
   return (
-    <table
-      className="table"
-      style={
-        ({ minWidth: 800 + 'px' },
-        { maxWidth: 700 + 'px' },
-        { minHeight: 1500 + 'px' },
-        { maxHeight: 1500 + 'px' })
-      }
-    >
+    <table className="table">
       {children || (
         <>
           <TableHeader {...{ onSort, selectedSort, columns }} />
@@ -30,4 +22,5 @@ Table.propTypes = {
   data: PropTypes.array,
   children: PropTypes.array
 }
+
 export default Table

@@ -1,41 +1,36 @@
-import React, { useEffect, useState } from 'react/cjs/react.development'
-import { useParams, useHistory } from 'react-router-dom'
-import API from '../../api'
-import Quality from '../../ui/qualities/quality'
+import React, { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+import api from '../../../api'
+import UserCard from '../../ui/userCard'
+import QualitiesCard from '../../ui/qualitiesCard'
+import MeetingsCard from '../../ui/meetingsCard'
+import Comments from '../../ui/comments'
 
-const UserPage = () => {
-  const history = useHistory()
-  const { userId } = useParams()
+const UserPage = ({ userId }) => {
   const [user, setUser] = useState()
   useEffect(() => {
-    API.users.getById(userId).then((data) => setUser(data))
+    api.users.getById(userId).then((data) => setUser(data))
   }, [])
-  const handleEditForm = () => {
-    history.push(`/users/${userId}/edit`)
-  }
   if (user) {
     return (
-      <div className="m-5">
-        {
-          <div key={user._id}>
-            <h2 scope="row">{user.name}</h2>
-
-            <h3>Профессия: {user.profession.name}</h3>
-            <div className="mt-3">
-              <Quality qualities={user.qualities} />
-            </div>
-
-            <div className="mb-4 mt-3">
-              completedMeetings: {user.completedMeetings}
-            </div>
-            <h5>Rate: {user.rate}</h5>
-            <button onClick={handleEditForm}>Изменить</button>
+      <div className="container">
+        <div className="row gutters-sm">
+          <div className="col-md-4 mb-3">
+            <UserCard user={user} />
+            <QualitiesCard data={user.qualities} />
+            <MeetingsCard value={user.completedMeetings} />
           </div>
-        }
+          <div className="col-md-8">
+            <Comments />
+          </div>
+        </div>
       </div>
     )
-  }
-  return 'Loading...'
+  } else return <h1>Loading</h1>
+}
+
+UserPage.propTypes = {
+  userId: PropTypes.string.isRequired
 }
 
 export default UserPage
