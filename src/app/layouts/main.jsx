@@ -6,7 +6,7 @@ const Main = () => {
   const handleClick = () => {
     initialize()
   }
-  console.log(progress)
+
   return (
     <div className="container mt-5">
       <h1> Main Page</h1>
