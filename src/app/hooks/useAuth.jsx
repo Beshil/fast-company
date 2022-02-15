@@ -3,9 +3,16 @@ import PropTypes from 'prop-types'
 import axios from 'axios'
 import userService from '../services/user.service'
 import { toast } from 'react-toastify'
-import { setTokens } from '../services/localStorage.service'
+import localStorageService, {
+  setTokens
+} from '../services/localStorage.service'
 
-const httpAuth = axios.create()
+export const httpAuth = axios.create({
+  baseURL: 'https://identitytoolkit.googleapis.com/v1/',
+  params: {
+    key: process.env.REACT_APP_FIREBASE_KEY
+  }
+})
 const AuthContext = React.createContext()
 
 export const useAuth = () => {
@@ -16,17 +23,24 @@ const AuthProvider = ({ children }) => {
   const [currentUser, setUser] = useState()
   const [error, setError] = useState(null)
 
+  const randomInt = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
   async function signUp({ email, password, ...rest }) {
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_FIREBASE_KEY}`
     try {
-      const { data } = await httpAuth.post(url, {
+      const { data } = await httpAuth.post('accounts:signUp', {
         email,
         password,
         returnSecureToken: true
       })
       setTokens(data)
-      await createUser({ _id: data.localId, email, ...rest })
-      console.log(data)
+      await createUser({
+        _id: data.localId,
+        email,
+        rate: randomInt(1, 5),
+        completedMeetings: randomInt(0, 200),
+        ...rest
+      })
     } catch (error) {
       const { code, message } = error.response.data.error
       if (code === 400) {
@@ -43,16 +57,14 @@ const AuthProvider = ({ children }) => {
   }
 
   async function signIn({ email, password }) {
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_FIREBASE_KEY}`
     try {
-      const { data } = await httpAuth.post(url, {
+      const { data } = await httpAuth.post('accounts:signInWithPassword', {
         email,
         password,
         returnSecureToken: true
       })
       setTokens(data)
-
-      console.log(data)
+      getUserdata()
     } catch (error) {
       const { code, message } = error.response.data.error
       console.log(code, message)
@@ -77,7 +89,8 @@ const AuthProvider = ({ children }) => {
 
   async function createUser(data) {
     try {
-      const { content } = userService.create(data)
+      const { content } = await userService.create(data)
+
       setUser(content)
     } catch (error) {
       errorCatcher(error)
@@ -88,6 +101,17 @@ const AuthProvider = ({ children }) => {
     const { message } = error.response.data
     setError(message)
   }
+  async function getUserdata() {
+    try {
+      const { content } = await userService.getCurrentUser()
+      setUser(content)
+    } catch (error) {
+      errorCatcher(error)
+    }
+  }
+  useEffect(() => {
+    if (localStorageService.getAccesToken()) getUserdata()
+  }, [])
   useEffect(() => {
     if (error !== null) {
       toast(error)

@@ -66,7 +66,6 @@ const LoginForm = () => {
     } catch (error) {
       setErrors(error)
     }
-    console.log(data)
   }
   return (
     <form onSubmit={handleSubmit}>
