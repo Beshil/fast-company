@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 import localStorageService, {
   setTokens
 } from '../services/localStorage.service'
+import { useHistory } from 'react-router-dom'
 
 export const httpAuth = axios.create({
   baseURL: 'https://identitytoolkit.googleapis.com/v1/',
@@ -22,6 +23,8 @@ export const useAuth = () => {
 const AuthProvider = ({ children }) => {
   const [currentUser, setUser] = useState()
   const [error, setError] = useState(null)
+  const [isLoading, setLoading] = useState(true)
+  const history = useHistory()
 
   const randomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min)
@@ -39,6 +42,9 @@ const AuthProvider = ({ children }) => {
         email,
         rate: randomInt(1, 5),
         completedMeetings: randomInt(0, 200),
+        image: `https://avatars.dicebear.com/api/avataaars/${(Math.random() + 1)
+          .toString(36)
+          .substring(7)}.svg`,
         ...rest
       })
     } catch (error) {
@@ -64,7 +70,7 @@ const AuthProvider = ({ children }) => {
         returnSecureToken: true
       })
       setTokens(data)
-      getUserdata()
+      await getUserdata()
     } catch (error) {
       const { code, message } = error.response.data.error
       console.log(code, message)
@@ -87,6 +93,12 @@ const AuthProvider = ({ children }) => {
     }
   }
 
+  function logOut() {
+    localStorageService.removeAuthData()
+    setUser(null)
+    history.push('/')
+  }
+
   async function createUser(data) {
     try {
       const { content } = await userService.create(data)
@@ -107,10 +119,13 @@ const AuthProvider = ({ children }) => {
       setUser(content)
     } catch (error) {
       errorCatcher(error)
+    } finally {
+      setLoading(false)
     }
   }
   useEffect(() => {
     if (localStorageService.getAccesToken()) getUserdata()
+    else setLoading(false)
   }, [])
   useEffect(() => {
     if (error !== null) {
@@ -119,8 +134,8 @@ const AuthProvider = ({ children }) => {
     }
   }, [error])
   return (
-    <AuthContext.Provider value={{ signUp, currentUser, signIn }}>
-      {children}
+    <AuthContext.Provider value={{ signUp, currentUser, signIn, logOut }}>
+      {!isLoading ? children : 'Loading...'}
     </AuthContext.Provider>
   )
 }
