@@ -108,6 +108,7 @@ const AuthProvider = ({ children }) => {
       errorCatcher(error)
     }
   }
+
   async function upDateUser(data) {
     try {
       const { content } = await userService.create(data)
@@ -122,6 +123,7 @@ const AuthProvider = ({ children }) => {
     const { message } = error.response.data
     setError(message)
   }
+
   async function getUserdata() {
     try {
       const { content } = await userService.getCurrentUser()
