@@ -1,17 +1,16 @@
 import httpService from './http.service'
+const commentEndpoint = 'comment/'
 
-const commentsEndpoint = 'comment/'
-const commentsService = {
-  createComment: async (payLoad) => {
+const commentService = {
+  createComment: async (payload) => {
     const { data } = await httpService.put(
-      commentsEndpoint + payLoad._id,
-      payLoad
+      commentEndpoint + payload._id,
+      payload
     )
-
     return data
   },
   getComments: async (pageId) => {
-    const { data } = await httpService.get(commentsEndpoint, {
+    const { data } = await httpService.get(commentEndpoint, {
       params: {
         orderBy: '"pageId"',
         equalTo: `"${pageId}"`
@@ -20,8 +19,8 @@ const commentsService = {
     return data
   },
   removeComment: async (commentId) => {
-    const { data } = await httpService.delete(commentsEndpoint + commentId)
+    const { data } = await httpService.delete(commentEndpoint + commentId)
     return data
   }
 }
-export default commentsService
+export default commentService

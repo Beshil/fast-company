@@ -1,14 +1,14 @@
-const express = require("express");
-const verifySignUp = require("../middleware/verifySignUp");
+const express = require('express')
+const verifySignUp = require('../middleware/verifySignUp')
 
-const router = express.Router();
+const router = express.Router()
 
-const controller = require("../controllers/auth.controller");
+const controller = require('../controllers/auth.controller')
 
-router.post("/signup", [verifySignUp.checkDuplicateEmail], controller.signUp);
-router.post("/signin", controller.signIn);
-router.get("/signin", (req, res, next) => {
-    res.status(200).send("ok");
-});
+router.post('/signup', [verifySignUp.checkDuplicateEmail], controller.signUp)
+router.post('/signin', controller.signIn)
+router.get('/signin', (req, res, next) => {
+  res.status(200).send('ok')
+})
 
-module.exports = router;
+module.exports = router

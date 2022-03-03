@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { paginate } from '../../../utils/paginate'
 import Pagination from '../../common/pagination'
@@ -6,19 +6,19 @@ import GroupList from '../../common/groupList'
 import SearchStatus from '../../ui/searchStatus'
 import UserTable from '../../ui/usersTable'
 import _ from 'lodash'
-import { useUser } from '../../../hooks/useUsers'
-import { useAuth } from '../../../hooks/useAuth'
 import { useSelector } from 'react-redux'
 import {
   getProfessions,
   getProfessionsLoadingStatus
 } from '../../../store/professions'
+import { getCurrentUserId, getUsersList } from '../../../store/users'
 
 const UsersListPage = () => {
-  const { users } = useUser()
-  const { currentUser } = useAuth()
+  const users = useSelector(getUsersList())
+  const currentUserId = useSelector(getCurrentUserId())
+
   const professions = useSelector(getProfessions())
-  const professionLoading = useSelector(getProfessionsLoadingStatus())
+  const professionsLoading = useSelector(getProfessionsLoadingStatus())
   const [currentPage, setCurrentPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedProf, setSelectedProf] = useState()
@@ -26,7 +26,7 @@ const UsersListPage = () => {
   const pageSize = 8
 
   const handleDelete = (userId) => {
-    // setUsers(users.filter((user) => user._id !== userId))
+    // setUsers(users.filter((user) => user._id !== userId));
     console.log(userId)
   }
   const handleToggleBookMark = (id) => {
@@ -35,7 +35,7 @@ const UsersListPage = () => {
 
       return user
     })
-    // setUsers(newArray)
+    // setUsers(newArray);
     console.log(newArray)
   }
 
@@ -72,10 +72,9 @@ const UsersListPage = () => {
               JSON.stringify(user.profession) === JSON.stringify(selectedProf)
           )
         : data
-      return filteredUsers.filter((u) => u._id !== currentUser._id)
+      return filteredUsers.filter((u) => u._id !== currentUserId)
     }
     const filteredUsers = filterUsers(users)
-
     const count = filteredUsers.length
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order])
     const usersCrop = paginate(sortedUsers, currentPage, pageSize)
@@ -85,7 +84,7 @@ const UsersListPage = () => {
 
     return (
       <div className="d-flex">
-        {professions && !professionLoading && (
+        {professions && !professionsLoading && (
           <div className="d-flex flex-column flex-shrink-0 p-3">
             <GroupList
               selectedItem={selectedProf}

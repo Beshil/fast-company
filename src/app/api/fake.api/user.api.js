@@ -166,8 +166,9 @@ const users = [
     bookmark: false
   }
 ]
-if (!localStorage.getItem('users'))
+if (!localStorage.getItem('users')) {
   localStorage.setItem('users', JSON.stringify(users))
+}
 
 const fetchAll = () =>
   new Promise((resolve) => {

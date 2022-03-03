@@ -21,9 +21,9 @@ const comments = [
     created_at: '1633573058520'
   }
 ]
-if (!localStorage.getItem('comments'))
+if (!localStorage.getItem('comments')) {
   localStorage.setItem('comments', JSON.stringify(comments))
-
+}
 const fetchAll = () =>
   new Promise((resolve) => {
     window.setTimeout(function () {
