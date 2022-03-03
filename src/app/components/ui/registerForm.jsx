@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 import { validator } from '../../utils/validator'
 import TextField from '../common/form/textField'
@@ -9,9 +10,9 @@ import RadioField from '../common/form/radioField'
 import MultiSelectField from '../common/form/multiSelectField'
 import CheckBoxField from '../common/form/checkBoxField'
 
-import { useQualities } from '../../hooks/useQualities'
-import { useProfession } from '../../hooks/useProfession'
 import { useAuth } from '../../hooks/useAuth'
+import { getProfessions } from '../../store/professions'
+import { getQualities } from '../../store/qualities'
 
 const RegisterForm = () => {
   const history = useHistory()
@@ -24,8 +25,8 @@ const RegisterForm = () => {
     qualities: [],
     licence: false
   })
-  const { qualities } = useQualities()
-  const { professions } = useProfession()
+  const qualities = useSelector(getQualities())
+  const professions = useSelector(getProfessions())
   const { signUp } = useAuth()
 
   const qualitiesList = qualities.map((q) => ({ label: q.name, value: q._id }))
