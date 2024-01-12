@@ -18,8 +18,8 @@ function App() {
           <ProtectedRoute path="/users/:userId?/:edit?" component={Users} />
           <Route path="/login/:type?" component={Login} />
           <Route path="/logout" component={LogOut} />
-          <Route path="/" exact component={Main} />
-          <Redirect to="/" />
+          <Route path="/fast-company" exact component={Main} />
+          <Redirect to="/fast-company" />
         </Switch>
       </AppLoader>
       <ToastContainer />
