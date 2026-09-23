@@ -15,9 +15,7 @@ function ProtectedRoute({ component: Component, children, ...rest }) {
             <Redirect
               to={{
                 pathname: '/login',
-                state: {
-                  from: props.location
-                }
+                search: '?from=' + encodeURIComponent(props.location.pathname)
               }}
             />
           )

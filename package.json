@@ -11,6 +11,7 @@
     "bootstrap": "^5.1.0",
     "bootstrap-icons": "^1.5.0",
     "eslint-plugin-prettier": "^3.4.1",
+    "gh-pages": "^6.1.1",
     "history": "^4.9.0",
     "lodash": "^4.17.15",
     "nanoid": "^3.3.1",
@@ -25,6 +26,8 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -58,5 +61,6 @@
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-react": "^7.25.1",
     "eslint-plugin-react-hooks": "^4.2.0"
-  }
+  },
+  "homepage": "https://beshil.github.io/fast-company"
 }

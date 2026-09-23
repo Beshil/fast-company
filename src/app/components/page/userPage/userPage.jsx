@@ -25,7 +25,7 @@ const UserPage = ({ userId }) => {
         </div>
       </div>
     )
-  } else return <h1>Loading</h1>
+  } else return <h1>Пользователь не найден</h1>
 }
 
 UserPage.propTypes = {

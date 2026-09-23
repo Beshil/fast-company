@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { useHistory } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { getCurrentUserId } from '../../store/users'
+import Profession from './profession'
 
 const UserCard = ({ user }) => {
   const history = useHistory()
@@ -24,10 +25,15 @@ const UserCard = ({ user }) => {
         )}
 
         <div className="d-flex flex-column align-items-center text-center position-relative">
-          <img src={user.image} className="rounded-circle" width="150" />
+          <img
+            src={user.image || `${process.env.PUBLIC_URL}/logo192.png`}
+            alt={user.name}
+            className="rounded-circle"
+            width="150"
+          />
           <div className="mt-3">
             <h4>{user.name}</h4>
-            <p className="text-secondary mb-1">{user.profession.name}</p>
+            <Profession id={user.profession} />
             <div className="text-muted">
               <i
                 className="bi bi-caret-down-fill text-primary"

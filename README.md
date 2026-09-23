@@ -1,70 +1,35 @@
-# Getting Started with Create React App
+# Fast Company
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React-приложение для просмотра пользователей, поиска по имени и профессии, редактирования профиля, личного избранного и комментариев. Стек: React 17, Redux Toolkit, React Router 5, Bootstrap, Firebase Authentication и Realtime Database REST API.
 
-## Available Scripts
+## Локальный запуск
 
-In the project directory, you can run:
+1. Установите зависимости: `npm ci`.
+2. Скопируйте `.env.example` в `.env.local`.
+3. В Firebase включите Authentication → Email/Password и создайте Realtime Database.
+4. Заполните `REACT_APP_FIREBASE_KEY` (Web API key проекта) и `REACT_APP_FIREBASE_DATABASE_URL` (полный URL базы, включая регион, если он есть).
+5. Запустите `npm start`. После изменения окружения перезапускайте сервер.
 
-### `npm start`
+Без конфигурации приложение показывает сообщение о настройке, а не отправляет запросы на текущий сайт. Переменные REACT_APP попадают в браузерную сборку; не помещайте туда приватные серверные ключи.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Данные и права доступа
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Коллекции: `user`, `profession`, `quality`, `comment`. Профессия в профиле хранится как ID, качества — массив ID, личное избранное — массив ID пользователей в `bookmarks` текущего профиля.
 
-### `npm test`
+Для отдельной тестовой базы можно подготовить JSON командой `node scripts/export-demo-data.js > demo-data.json` и импортировать его через Firebase Console. Команда не подключается к базе. Импорт выполняйте только в пустую тестовую базу: импорт в существующий узел заменяет его содержимое. Тестовые профили не являются аккаунтами Firebase Authentication.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Правила работающего Firebase-проекта не входят в этот репозиторий. Перед подключением реальных данных настройте и проверьте Rules: чтение справочников для формы регистрации; чтение профилей и комментариев для вошедших пользователей; запись профиля только владельцем; создание комментария с userId равным auth.uid; удаление комментария только автором. Для запросов комментариев нужен индекс pageId. Ограничения интерфейса не заменяют правила базы. Публичной кнопки заполнения базы в приложении нет.
 
-### `npm run build`
+## Проверки
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- `npm test -- --watchAll=false --runInBand` — регрессионные тесты.
+- `npm run build` — production-сборка.
+- `npm run deploy` — публикация build в gh-pages; требует доступа к репозиторию.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Проект пока использует старую цепочку Create React App 4 / webpack 4. На Node.js с OpenSSL 3 для запуска и сборки может потребоваться переменная `NODE_OPTIONS=--openssl-legacy-provider`. В PowerShell: `$env:NODE_OPTIONS='--openssl-legacy-provider'`. Обновление сборщика и зависимостей — отдельная задача.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Маршруты и сессия
 
-### `npm run eject`
+Hash-маршруты (например, `/fast-company/#/users`) поддерживают обновление страницы на GitHub Pages без серверных rewrite-правил. Пункт «Оставаться в системе» сохраняет сессию в localStorage; без него используется sessionStorage. Истёкший токен обновляется через Firebase Secure Token API.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Если аккаунт создан, но запись профиля не удалась, войдите и выберите «Заполнить профиль». Ошибки загрузки и сохранения отображаются в интерфейсе; неотправленный комментарий остаётся в форме.

@@ -26,10 +26,14 @@ const authService = {
     return data
   },
   refresh: async () => {
-    const { data } = await httpAuth.post('token', {
-      grant_type: 'refresh_token',
-      refresh_token: localStorageService.getRefreshToken()
-    })
+    const { data } = await httpAuth.post(
+      'https://securetoken.googleapis.com/v1/token',
+      new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: localStorageService.getRefreshToken()
+      }),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    )
     return data
   }
 }

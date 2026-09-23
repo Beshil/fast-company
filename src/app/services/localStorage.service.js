@@ -2,40 +2,29 @@ const TOKEN_KEY = 'jwt-token'
 const REFRESH_KEY = 'jwt-refresh-token'
 const EXPIRES_KEY = 'jwt-expires'
 const USERID_KEY = 'user-local-id'
-
-export function setTokens({
-  refreshToken,
-  idToken,
-  localId,
-  expiresIn = 3600
-}) {
-  const expiresDate = new Date().getTime() + expiresIn * 1000
-  localStorage.setItem(USERID_KEY, localId)
-  localStorage.setItem(TOKEN_KEY, idToken)
-  localStorage.setItem(REFRESH_KEY, refreshToken)
-  localStorage.setItem(EXPIRES_KEY, expiresDate)
-}
-export function getAccessToken() {
-  return localStorage.getItem(TOKEN_KEY)
-}
-export function getRefreshToken() {
-  return localStorage.getItem(REFRESH_KEY)
-}
+const read = (key) => sessionStorage.getItem(key) || localStorage.getItem(key)
 export function removeAuthData() {
-  localStorage.removeItem(USERID_KEY)
-  localStorage.removeItem(TOKEN_KEY)
-  localStorage.removeItem(REFRESH_KEY)
-  localStorage.removeItem(EXPIRES_KEY)
+  for (const storage of [localStorage, sessionStorage]) {
+    for (const key of [TOKEN_KEY, REFRESH_KEY, EXPIRES_KEY, USERID_KEY])
+      storage.removeItem(key)
+  }
 }
-
-export function getTokenExpiresDate() {
-  return localStorage.getItem(EXPIRES_KEY)
+export function setTokens(
+  { refreshToken, idToken, localId, expiresIn = 3600 },
+  remember = Boolean(localStorage.getItem(TOKEN_KEY))
+) {
+  const storage = remember ? localStorage : sessionStorage
+  removeAuthData()
+  storage.setItem(USERID_KEY, localId)
+  storage.setItem(TOKEN_KEY, idToken)
+  storage.setItem(REFRESH_KEY, refreshToken)
+  storage.setItem(EXPIRES_KEY, Date.now() + Number(expiresIn) * 1000)
 }
-export function getUserId() {
-  return localStorage.getItem(USERID_KEY)
-}
-
-const localStorageService = {
+export const getAccessToken = () => read(TOKEN_KEY)
+export const getRefreshToken = () => read(REFRESH_KEY)
+export const getTokenExpiresDate = () => Number(read(EXPIRES_KEY))
+export const getUserId = () => read(USERID_KEY)
+export default {
   setTokens,
   getAccessToken,
   getRefreshToken,
@@ -43,4 +32,3 @@ const localStorageService = {
   getUserId,
   removeAuthData
 }
-export default localStorageService

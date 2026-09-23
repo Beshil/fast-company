@@ -5,7 +5,7 @@ import isOutdated from '../utils/isOutdated'
 const professionsSlice = createSlice({
   name: 'professions',
   initialState: {
-    entities: null,
+    entities: [],
     isLoading: true,
     error: null,
     lastFetch: null
@@ -13,9 +13,10 @@ const professionsSlice = createSlice({
   reducers: {
     professionsRequested: (state) => {
       state.isLoading = true
+      state.error = null
     },
     professionsReceived: (state, action) => {
-      state.entities = action.payload
+      state.entities = action.payload || []
       state.lastFetch = Date.now()
       state.isLoading = false
     },

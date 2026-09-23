@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import configFile from '../config.json'
+import configFile from '../config'
 import localStorageService from './localStorage.service'
 import authService from './auth.service'
 
@@ -8,8 +8,11 @@ const http = axios.create({
   baseURL: configFile.apiEndpoint
 })
 
+let refreshRequest = null
+
 http.interceptors.request.use(
   async function (config) {
+    if (!configFile.apiEndpoint) throw new Error('Не настроен адрес Firebase')
     if (configFile.isFireBase) {
       const containSlash = /\/$/gi.test(config.url)
       config.url =
@@ -17,14 +20,31 @@ http.interceptors.request.use(
       const expiresDate = localStorageService.getTokenExpiresDate()
       const refreshToken = localStorageService.getRefreshToken()
       if (refreshToken && expiresDate < Date.now()) {
-        const data = await authService.refresh()
-
-        localStorageService.setTokens({
-          refreshToken: data.refresh_token,
-          idToken: data.id_token,
-          expiresIn: data.expires_id,
-          localId: data.user_id
-        })
+        if (!refreshRequest) {
+          refreshRequest = authService
+            .refresh()
+            .then((data) => {
+              if (localStorageService.getRefreshToken() !== refreshToken)
+                throw new Error('Сессия изменена')
+              localStorageService.setTokens({
+                refreshToken: data.refresh_token,
+                idToken: data.id_token,
+                expiresIn: data.expires_in,
+                localId: data.user_id
+              })
+            })
+            .catch((error) => {
+              if ([400, 401, 403].includes(error.response?.status)) {
+                localStorageService.removeAuthData()
+                window.dispatchEvent(new Event('auth:expired'))
+              }
+              throw error
+            })
+            .finally(() => {
+              refreshRequest = null
+            })
+        }
+        await refreshRequest
       }
       const accessToken = localStorageService.getAccessToken()
       if (accessToken) config.params = { ...config.params, auth: accessToken }
@@ -44,7 +64,11 @@ function transformData(data) {
 }
 http.interceptors.response.use(
   (res) => {
-    if (configFile.isFireBase) res.data = { content: transformData(res.data) }
+    if (configFile.isFireBase) {
+      const isCollection =
+        res.config.method === 'get' && /^[^/]+\.json$/.test(res.config.url)
+      res.data = { content: isCollection ? transformData(res.data) : res.data }
+    }
 
     return res
   },
@@ -54,10 +78,8 @@ http.interceptors.response.use(
       error.response.status >= 400 &&
       error.response.status < 500
 
-    if (!expectedErrors) {
-      console.log(error)
-      toast.error('Something was wrong. Try it later')
-    }
+    if (!expectedErrors) toast.error('Something was wrong. Try it later')
+
     return Promise.reject(error)
   }
 )
