@@ -14,13 +14,20 @@ import {
   getProfessions,
   getProfessionsLoadingStatus
 } from '../../../store/professions'
-import { getCurrentUserData, updateUser } from '../../../store/users'
+import {
+  getCurrentUserData,
+  getCurrentUserId,
+  updateUser
+} from '../../../store/users'
 
 const EditUserPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [data, setData] = useState()
   const currentUser = useSelector(getCurrentUserData())
   const dispatch = useDispatch()
+  const currentUserId = useSelector(getCurrentUserId())
+  const isSaving = useSelector((state) => state.users.isSaving)
+  const saveError = useSelector((state) => state.users.error)
   const qualities = useSelector(getQualities())
   const qualitiesLoading = useSelector(getQualitiesLoadingStatus())
   const qualitiesList = qualities.map((q) => ({
@@ -66,18 +73,24 @@ const EditUserPage = () => {
     return result
   }
   useEffect(() => {
-    if (!professionLoading && !qualitiesLoading && currentUser && !data) {
+    if (!professionLoading && !qualitiesLoading && !data) {
       setData({
+        _id: currentUserId,
+        email: '',
+        name: '',
+        profession: '',
+        sex: 'male',
         ...currentUser,
-        qualities: transformData(currentUser.qualities)
+        qualities: transformData(currentUser?.qualities || [])
       })
     }
-  }, [professionLoading, qualitiesLoading, currentUser, data])
+  }, [professionLoading, qualitiesLoading, currentUser, currentUserId, data])
   useEffect(() => {
     if (data && isLoading) setIsLoading(false)
   }, [data])
 
   const validatorConfig = {
+    profession: { isRequired: { message: 'Выберите профессию' } },
     email: {
       isRequired: {
         message: 'Электронная почта обязательна для заполнения'
@@ -92,7 +105,9 @@ const EditUserPage = () => {
       }
     }
   }
-  useEffect(() => validate(), [data])
+  useEffect(() => {
+    validate()
+  }, [data])
   const handleChange = (target) => {
     setData((prevState) => ({
       ...prevState,
@@ -110,7 +125,7 @@ const EditUserPage = () => {
       <BackHistoryButton />
       <div className="row">
         <div className="col-md-6 offset-md-3 shadow p-4">
-          {!isLoading && Object.keys(professions).length > 0 ? (
+          {!isLoading ? (
             <form onSubmit={handleSubmit}>
               <TextField
                 label="Имя"
@@ -153,9 +168,14 @@ const EditUserPage = () => {
                 name="qualities"
                 label="Выберите ваши качества"
               />
+              {saveError && (
+                <p className="text-danger" role="alert">
+                  {saveError}
+                </p>
+              )}
               <button
                 type="submit"
-                disabled={!isValid}
+                disabled={!isValid || isSaving}
                 className="btn btn-primary w-100 mx-auto"
               >
                 Обновить

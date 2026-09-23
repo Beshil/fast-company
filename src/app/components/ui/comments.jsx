@@ -17,14 +17,15 @@ const Comments = () => {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(loadCommentsList(userId))
-  }, [userId])
+  }, [dispatch, userId])
   const currentUserId = useSelector(getCurrentUserId())
   const isLoading = useSelector(getCommentsLoadingStatus())
 
   const comments = useSelector(getComments())
+  const error = useSelector((state) => state.comments.error)
 
   const handleSubmit = (data) => {
-    dispatch(createComment(data, userId, currentUserId))
+    return dispatch(createComment(data, userId, currentUserId))
   }
   const handleRemoveComment = (id) => {
     dispatch(removeComment(id))
@@ -34,9 +35,18 @@ const Comments = () => {
     <>
       <div className="card mb-2">
         <div className="card-body ">
-          <AddCommentForm onSubmit={handleSubmit} />
+          <AddCommentForm key={userId} onSubmit={handleSubmit} />
         </div>
       </div>
+      {error && (
+        <div role="alert">
+          {error}
+          <button onClick={() => dispatch(loadCommentsList(userId))}>
+            Повторить загрузку
+          </button>
+        </div>
+      )}
+      {isLoading && <p role="status">Загрузка комментариев...</p>}
       {sortedComments.length > 0 && (
         <div className="card mb-3">
           <div className="card-body ">

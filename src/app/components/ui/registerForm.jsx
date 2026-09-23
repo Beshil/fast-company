@@ -12,6 +12,7 @@ import { signUp } from '../../store/users'
 
 const RegisterForm = () => {
   const dispatch = useDispatch()
+  const isAuthenticating = useSelector((state) => state.users.isAuthenticating)
   const [data, setData] = useState({
     email: '',
     password: '',
@@ -21,6 +22,7 @@ const RegisterForm = () => {
     qualities: [],
     licence: false
   })
+  const authError = useSelector((state) => state.users.authError)
   const qualities = useSelector(getQualities())
   const qualitiesList = qualities.map((q) => ({
     label: q.name,
@@ -164,10 +166,15 @@ const RegisterForm = () => {
       >
         Подтвердить <a>лицензионное соглашение</a>
       </CheckBoxField>
+      {authError && (
+        <p className="text-danger" role="alert">
+          {authError}
+        </p>
+      )}
       <button
         className="btn btn-primary w-100 mx-auto"
         type="submit"
-        disabled={!isValid}
+        disabled={!isValid || isAuthenticating}
       >
         Submit
       </button>

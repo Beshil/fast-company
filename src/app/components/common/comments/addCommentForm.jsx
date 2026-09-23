@@ -4,8 +4,9 @@ import { validator } from '../../../utils/validator'
 import PropTypes from 'prop-types'
 
 const AddCommentForm = ({ onSubmit }) => {
-  const [data, setData] = useState({})
+  const [data, setData] = useState({ content: '' })
   const [errors, setErrors] = useState({})
+  const [isSaving, setIsSaving] = useState(false)
   const handleChange = (target) => {
     setData((prevState) => ({
       ...prevState,
@@ -26,15 +27,29 @@ const AddCommentForm = ({ onSubmit }) => {
     return Object.keys(errors).length === 0
   }
   const clearForm = () => {
-    setData({})
+    setData({ content: '' })
     setErrors({})
   }
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const isValid = validate()
     if (!isValid) return
-    onSubmit(data)
-    clearForm()
+    if (isSaving) return
+    setIsSaving(true)
+    try {
+      if (await onSubmit(data)) clearForm()
+      else {
+        setErrors({
+          content: 'Не удалось сохранить комментарий. Попробуйте ещё раз.'
+        })
+      }
+    } catch (error) {
+      setErrors({
+        content: 'Не удалось сохранить комментарий. Попробуйте ещё раз.'
+      })
+    } finally {
+      setIsSaving(false)
+    }
   }
   return (
     <div>
@@ -48,7 +63,9 @@ const AddCommentForm = ({ onSubmit }) => {
           error={errors.content}
         />
         <div className="d-flex justify-content-end">
-          <button className="btn btn-primary">Опубликовать</button>
+          <button className="btn btn-primary" disabled={isSaving}>
+            Опубликовать
+          </button>
         </div>
       </form>
     </div>

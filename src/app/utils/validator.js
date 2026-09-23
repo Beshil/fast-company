@@ -5,7 +5,7 @@ export function validator(data, config) {
     switch (validateMethod) {
       case 'isRequired': {
         if (typeof data === 'boolean') statusValidate = !data
-        else statusValidate = data.trim() === ''
+        else statusValidate = data == null || String(data).trim() === ''
 
         break
       }
@@ -25,7 +25,7 @@ export function validator(data, config) {
         break
       }
       case 'min': {
-        statusValidate = data.length < config.value
+        statusValidate = String(data ?? '').length < config.value
         break
       }
       default:
@@ -33,11 +33,11 @@ export function validator(data, config) {
     }
     if (statusValidate) return config.message
   }
-  for (const fieldName in data) {
+  for (const fieldName in config) {
     for (const validateMethod in config[fieldName]) {
       const error = validate(
         validateMethod,
-        data[fieldName],
+        data?.[fieldName],
         config[fieldName][validateMethod]
       )
       if (error && !errors[fieldName]) errors[fieldName] = error

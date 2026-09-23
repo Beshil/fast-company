@@ -6,15 +6,22 @@ import GroupList from '../../common/groupList'
 import SearchStatus from '../../ui/searchStatus'
 import UserTable from '../../ui/usersTable'
 import _ from 'lodash'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   getProfessions,
   getProfessionsLoadingStatus
 } from '../../../store/professions'
-import { getCurrentUserId, getUsersList } from '../../../store/users'
+import {
+  getCurrentUserId,
+  getCurrentUserData,
+  getUsersList,
+  toggleBookmark
+} from '../../../store/users'
 
 const UsersListPage = () => {
   const users = useSelector(getUsersList())
+  const dispatch = useDispatch()
+  const currentUser = useSelector(getCurrentUserData())
   const currentUserId = useSelector(getCurrentUserId())
 
   const professions = useSelector(getProfessions())
@@ -25,18 +32,8 @@ const UsersListPage = () => {
   const [sortBy, setSortBy] = useState({ path: 'name', order: 'asc' })
   const pageSize = 8
 
-  const handleDelete = (userId) => {
-    // setUsers(users.filter((user) => user._id !== userId));
-    console.log(userId)
-  }
   const handleToggleBookMark = (id) => {
-    const newArray = users.map((user) => {
-      if (user._id === id) return { ...user, bookmark: !user.bookmark }
-
-      return user
-    })
-    // setUsers(newArray);
-    console.log(newArray)
+    dispatch(toggleBookmark(id))
   }
 
   useEffect(() => {
@@ -67,14 +64,14 @@ const UsersListPage = () => {
               user.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1
           )
         : selectedProf
-        ? data.filter(
-            (user) =>
-              JSON.stringify(user.profession) === JSON.stringify(selectedProf)
-          )
+        ? data.filter((user) => user.profession === selectedProf._id)
         : data
       return filteredUsers.filter((u) => u._id !== currentUserId)
     }
-    const filteredUsers = filterUsers(users)
+    const filteredUsers = filterUsers(users).map((user) => ({
+      ...user,
+      bookmark: (currentUser?.bookmarks || []).includes(user._id)
+    }))
     const count = filteredUsers.length
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order])
     const usersCrop = paginate(sortedUsers, currentPage, pageSize)
@@ -111,7 +108,6 @@ const UsersListPage = () => {
               users={usersCrop}
               onSort={handleSort}
               selectedSort={sortBy}
-              onDelete={handleDelete}
               onToggleBookMark={handleToggleBookMark}
             />
           )}

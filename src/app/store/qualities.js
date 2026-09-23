@@ -5,7 +5,7 @@ import isOutdated from '../utils/isOutdated'
 const qualitiesSlice = createSlice({
   name: 'qualities',
   initialState: {
-    entities: null,
+    entities: [],
     isLoading: true,
     error: null,
     lastFetch: null
@@ -13,9 +13,10 @@ const qualitiesSlice = createSlice({
   reducers: {
     qualitiesRequested: (state) => {
       state.isLoading = true
+      state.error = null
     },
     qualitiesReceived: (state, action) => {
-      state.entities = action.payload
+      state.entities = action.payload || []
       state.lastFetch = Date.now()
       state.isLoading = false
     },
@@ -49,7 +50,7 @@ export const getQualitiesLoadingStatus = () => (state) =>
 export const getQualitiesByIds = (qualitiesIds) => (state) => {
   if (state.qualities.entities) {
     const qualitiesArray = []
-    for (const qualId of qualitiesIds) {
+    for (const qualId of qualitiesIds || []) {
       for (const quality of state.qualities.entities) {
         if (quality._id === qualId) {
           qualitiesArray.push(quality)

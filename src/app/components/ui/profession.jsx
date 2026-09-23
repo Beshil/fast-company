@@ -9,7 +9,7 @@ import {
 const Profession = ({ id }) => {
   const isLoading = useSelector(getProfessionsLoadingStatus())
   const prof = useSelector(getProfessionById(id))
-  if (!isLoading) return <p>{prof.name}</p>
+  if (!isLoading) return <p>{prof?.name || 'Профессия не указана'}</p>
   else return 'Loading...'
 }
 Profession.propTypes = {

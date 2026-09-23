@@ -15,6 +15,7 @@ const LoginForm = () => {
   const loginError = useSelector(getAuthErrors())
   const history = useHistory()
   const dispatch = useDispatch()
+  const isAuthenticating = useSelector((state) => state.users.isAuthenticating)
   const [errors, setErrors] = useState({})
   const handleChange = (target) => {
     setData((prevState) => ({
@@ -49,9 +50,8 @@ const LoginForm = () => {
     e.preventDefault()
     const isValid = validate()
     if (!isValid) return
-    const redirect = history.location.state
-      ? history.location.state.from.pathname
-      : '/'
+    const from = new URLSearchParams(history.location.search).get('from')
+    const redirect = from?.startsWith('/users') ? from : '/users'
 
     dispatch(login({ payload: data, redirect }))
   }
@@ -79,7 +79,7 @@ const LoginForm = () => {
       <button
         className="btn btn-primary w-100 mx-auto"
         type="submit"
-        disabled={!isValid}
+        disabled={!isValid || isAuthenticating}
       >
         Submit
       </button>
